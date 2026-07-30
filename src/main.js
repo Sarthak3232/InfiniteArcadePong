@@ -72,12 +72,28 @@ if (canvas) {
       ball.x = rightPaddle.x - ball.radius;
     }
 
-    if (ball.x + ball.radius < 0 || ball.x - ball.radius > canvas.width) {
+    if (ball.x + ball.radius < 0) {
+      awardPoint('opponent');
+      resetBall();
+    } else if (ball.x - ball.radius > canvas.width) {
+      awardPoint('player');
       resetBall();
     }
   }
 
   resetBall();
+
+  let playerScore = 0;
+  let opponentScore = 0;
+
+  function awardPoint(scoringSide) {
+    if (scoringSide === 'player') {
+      playerScore++;
+    } else {
+      opponentScore++;
+    }
+    console.log(`Score - Player: ${playerScore}, Opponent: ${opponentScore}`);
+  }
 
   const PADDLE_WIDTH = 10;
   const PADDLE_HEIGHT = 70;
