@@ -10,19 +10,42 @@ if (canvas) {
   const COLOR_BALL = styles.getPropertyValue('--color-ball').trim();
 
   const BALL_RADIUS = 7;
+  const BALL_SPEED = 5;
+  const BALL_MAX_ANGLE = Math.PI / 4; // 45 degrees off horizontal
 
   const ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    vx: 4,
-    vy: 3,
+    vx: 0,
+    vy: 0,
     radius: BALL_RADIUS,
   };
+
+  function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+
+    const angle = (Math.random() * 2 - 1) * BALL_MAX_ANGLE;
+    const direction = Math.random() < 0.5 ? -1 : 1;
+    ball.vx = direction * BALL_SPEED * Math.cos(angle);
+    ball.vy = BALL_SPEED * Math.sin(angle);
+  }
 
   function updateBall() {
     ball.x += ball.vx;
     ball.y += ball.vy;
+
+    if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
+      ball.vy *= -1;
+      ball.y = Math.min(Math.max(ball.y, ball.radius), canvas.height - ball.radius);
+    }
+
+    if (ball.x + ball.radius < 0 || ball.x - ball.radius > canvas.width) {
+      resetBall();
+    }
   }
+
+  resetBall();
 
   function drawBall() {
     ctx.save();
