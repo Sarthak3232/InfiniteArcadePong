@@ -47,6 +47,34 @@ if (canvas) {
 
   resetBall();
 
+  const PADDLE_WIDTH = 10;
+  const PADDLE_HEIGHT = 70;
+  const PADDLE_MARGIN = 20;
+
+  const leftPaddle = {
+    x: PADDLE_MARGIN,
+    y: canvas.height / 2 - PADDLE_HEIGHT / 2,
+    width: PADDLE_WIDTH,
+    height: PADDLE_HEIGHT,
+  };
+
+  const rightPaddle = {
+    x: canvas.width - PADDLE_MARGIN - PADDLE_WIDTH,
+    y: canvas.height / 2 - PADDLE_HEIGHT / 2,
+    width: PADDLE_WIDTH,
+    height: PADDLE_HEIGHT,
+  };
+
+  function drawPaddle(paddle) {
+    ctx.save();
+    ctx.strokeStyle = COLOR_NEON_GREEN;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = COLOR_NEON_GREEN;
+    ctx.shadowBlur = 8;
+    ctx.strokeRect(paddle.x, paddle.y, paddle.width, paddle.height);
+    ctx.restore();
+  }
+
   function drawBall() {
     ctx.save();
     ctx.fillStyle = COLOR_BALL;
@@ -75,6 +103,8 @@ if (canvas) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawCenterLine();
+    drawPaddle(leftPaddle);
+    drawPaddle(rightPaddle);
     drawBall();
   }
 
