@@ -31,6 +31,30 @@ if (canvas) {
     ball.vy = BALL_SPEED * Math.sin(angle);
   }
 
+  const MAX_BOUNCE_ANGLE = Math.PI / 4; // 45 degrees, edge of paddle vs center
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function ballHitsPaddle(paddle) {
+    const closestX = clamp(ball.x, paddle.x, paddle.x + paddle.width);
+    const closestY = clamp(ball.y, paddle.y, paddle.y + paddle.height);
+    const dx = ball.x - closestX;
+    const dy = ball.y - closestY;
+    return dx * dx + dy * dy <= ball.radius * ball.radius;
+  }
+
+  function reflectOffPaddle(paddle, direction) {
+    const paddleCenterY = paddle.y + paddle.height / 2;
+    const relativeIntersectY = (ball.y - paddleCenterY) / (paddle.height / 2);
+    const bounceAngle = relativeIntersectY * MAX_BOUNCE_ANGLE;
+    const speed = Math.hypot(ball.vx, ball.vy) || BALL_SPEED;
+
+    ball.vx = direction * speed * Math.cos(bounceAngle);
+    ball.vy = speed * Math.sin(bounceAngle);
+  }
+
   function updateBall() {
     ball.x += ball.vx;
     ball.y += ball.vy;
@@ -38,6 +62,14 @@ if (canvas) {
     if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
       ball.vy *= -1;
       ball.y = Math.min(Math.max(ball.y, ball.radius), canvas.height - ball.radius);
+    }
+
+    if (ball.vx < 0 && ballHitsPaddle(leftPaddle)) {
+      reflectOffPaddle(leftPaddle, 1);
+      ball.x = leftPaddle.x + leftPaddle.width + ball.radius;
+    } else if (ball.vx > 0 && ballHitsPaddle(rightPaddle)) {
+      reflectOffPaddle(rightPaddle, -1);
+      ball.x = rightPaddle.x - ball.radius;
     }
 
     if (ball.x + ball.radius < 0 || ball.x - ball.radius > canvas.width) {
