@@ -1,0 +1,50 @@
+:root {
+  --color-bg: #0a0a2e;
+  --color-neon-green: #39ff14;
+  --color-ball: #ffffff;
+  --color-paddle: #ffffff;
+  --color-status-bar: #ff0000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-neon-green);
+  font-family: "Courier New", monospace;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#game-board {
+  background: var(--color-bg);
+  border: 2px solid var(--color-neon-green);
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 480px;
+  padding: 6px 10px;
+  color: var(--color-status-bar);
+}
+
+.status-item {
+  font-size: 12px;
+}
+
+/* Reusable neon glow, apply to text or bordered elements */
+.neon-glow {
+  color: var(--color-neon-green);
+  text-shadow: 0 0 4px var(--color-neon-green), 0 0 8px var(--color-neon-green);
+  border-color: var(--color-neon-green);
+  box-shadow: 0 0 4px var(--color-neon-green), 0 0 8px var(--color-neon-green);
+}
