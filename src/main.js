@@ -114,6 +114,17 @@ $(document).ready(function () {
       height: PADDLE_HEIGHT,
     };
 
+    function setLeftPaddleCenterY(centerY) {
+      leftPaddle.y = clamp(centerY - leftPaddle.height / 2, 0, canvas.height - leftPaddle.height);
+    }
+
+    $(canvas).on('mousemove', function (event) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleY = canvas.height / rect.height;
+      const mouseY = (event.clientY - rect.top) * scaleY;
+      setLeftPaddleCenterY(mouseY);
+    });
+
     function drawPaddle(paddle) {
       ctx.save();
       ctx.strokeStyle = COLOR_NEON_GREEN;
