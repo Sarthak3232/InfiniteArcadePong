@@ -123,10 +123,16 @@ $(document).ready(function () {
       }
       controlScheme = scheme;
       console.log(`Control scheme set to: ${controlScheme}`);
+      chrome.storage.local.set({ controlScheme: scheme });
     }
 
     // Debug hook until the Day 5 settings UI exists: setControlScheme('keyboard') from the console
     window.setControlScheme = setControlScheme;
+
+    chrome.storage.local.get(['controlScheme'], function (result) {
+      controlScheme = result.controlScheme === 'keyboard' ? 'keyboard' : 'mouse';
+      console.log(`Control scheme loaded: ${controlScheme}`);
+    });
 
     function setLeftPaddleCenterY(centerY) {
       leftPaddle.y = clamp(centerY - leftPaddle.height / 2, 0, canvas.height - leftPaddle.height);
