@@ -1,9 +1,17 @@
+$color-bg: #0a0a2e;
+$color-neon-green: #39ff14;
+$color-ball: #ffffff;
+$color-paddle: #ffffff;
+$color-status-bar: #ff0000;
+
+// Exposed as CSS custom properties too, main.js reads these at runtime
+// to color the canvas so the theme stays single-sourced here.
 :root {
-  --color-bg: #0a0a2e;
-  --color-neon-green: #39ff14;
-  --color-ball: #ffffff;
-  --color-paddle: #ffffff;
-  --color-status-bar: #ff0000;
+  --color-bg: #{$color-bg};
+  --color-neon-green: #{$color-neon-green};
+  --color-ball: #{$color-ball};
+  --color-paddle: #{$color-paddle};
+  --color-status-bar: #{$color-status-bar};
 }
 
 * {
@@ -13,8 +21,8 @@
 }
 
 body {
-  background: var(--color-bg);
-  color: var(--color-neon-green);
+  background: $color-bg;
+  color: $color-neon-green;
   font-family: 'Courier New', monospace;
 }
 
@@ -25,8 +33,8 @@ body {
 }
 
 #game-board {
-  background: var(--color-bg);
-  border: 2px solid var(--color-neon-green);
+  background: $color-bg;
+  border: 2px solid $color-neon-green;
 }
 
 .status-bar {
@@ -34,21 +42,21 @@ body {
   justify-content: space-between;
   width: 480px;
   padding: 6px 10px;
-  color: var(--color-status-bar);
+  color: $color-status-bar;
 }
 
 .status-item {
   font-size: 12px;
 }
 
-/* Reusable neon glow, apply to text or bordered elements */
+// Reusable neon glow, apply to text or bordered elements
 .neon-glow {
-  color: var(--color-neon-green);
+  color: $color-neon-green;
   text-shadow:
-    0 0 4px var(--color-neon-green),
-    0 0 8px var(--color-neon-green);
-  border-color: var(--color-neon-green);
+    0 0 4px $color-neon-green,
+    0 0 8px $color-neon-green;
+  border-color: $color-neon-green;
   box-shadow:
-    0 0 4px var(--color-neon-green),
-    0 0 8px var(--color-neon-green);
+    0 0 4px $color-neon-green,
+    0 0 8px $color-neon-green;
 }
