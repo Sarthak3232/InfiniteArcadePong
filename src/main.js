@@ -114,11 +114,28 @@ $(document).ready(function () {
       height: PADDLE_HEIGHT,
     };
 
+    let controlScheme = 'mouse';
+
+    function setControlScheme(scheme) {
+      if (scheme !== 'mouse' && scheme !== 'keyboard') {
+        console.warn(`Unknown control scheme: ${scheme}`);
+        return;
+      }
+      controlScheme = scheme;
+      console.log(`Control scheme set to: ${controlScheme}`);
+    }
+
+    // Debug hook until the Day 5 settings UI exists: setControlScheme('keyboard') from the console
+    window.setControlScheme = setControlScheme;
+
     function setLeftPaddleCenterY(centerY) {
       leftPaddle.y = clamp(centerY - leftPaddle.height / 2, 0, canvas.height - leftPaddle.height);
     }
 
     $(canvas).on('mousemove', function (event) {
+      if (controlScheme !== 'mouse') {
+        return;
+      }
       const rect = canvas.getBoundingClientRect();
       const scaleY = canvas.height / rect.height;
       const mouseY = (event.clientY - rect.top) * scaleY;
@@ -144,6 +161,9 @@ $(document).ready(function () {
     });
 
     function updateLeftPaddleFromKeyboard() {
+      if (controlScheme !== 'keyboard') {
+        return;
+      }
       if (heldKeys.ArrowUp) {
         leftPaddle.y -= PADDLE_KEY_SPEED;
       }
