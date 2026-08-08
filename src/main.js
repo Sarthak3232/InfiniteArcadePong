@@ -125,6 +125,34 @@ $(document).ready(function () {
       setLeftPaddleCenterY(mouseY);
     });
 
+    const PADDLE_KEY_SPEED = 6;
+    const heldKeys = {
+      ArrowUp: false,
+      ArrowDown: false,
+    };
+
+    $(document).on('keydown', function (event) {
+      if (event.key in heldKeys) {
+        heldKeys[event.key] = true;
+      }
+    });
+
+    $(document).on('keyup', function (event) {
+      if (event.key in heldKeys) {
+        heldKeys[event.key] = false;
+      }
+    });
+
+    function updateLeftPaddleFromKeyboard() {
+      if (heldKeys.ArrowUp) {
+        leftPaddle.y -= PADDLE_KEY_SPEED;
+      }
+      if (heldKeys.ArrowDown) {
+        leftPaddle.y += PADDLE_KEY_SPEED;
+      }
+      leftPaddle.y = clamp(leftPaddle.y, 0, canvas.height - leftPaddle.height);
+    }
+
     function drawPaddle(paddle) {
       ctx.save();
       ctx.strokeStyle = COLOR_NEON_GREEN;
@@ -169,6 +197,7 @@ $(document).ready(function () {
     }
 
     function update() {
+      updateLeftPaddleFromKeyboard();
       updateBall();
     }
 
