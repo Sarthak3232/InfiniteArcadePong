@@ -179,12 +179,85 @@ $(document).ready(function () {
       leftPaddle.y = clamp(leftPaddle.y, 0, canvas.height - leftPaddle.height);
     }
 
-    const AI_PADDLE_SPEED = 4;
+    const DIFFICULTY_PRESETS = {
+      easy: { speed: 2.5, reactionDelayFrames: 14, errorMargin: 45 },
+      medium: { speed: 4.5, reactionDelayFrames: 6, errorMargin: 20 },
+      hard: { speed: 7, reactionDelayFrames: 1, errorMargin: 5 },
+    };
+
+    let difficulty = 'medium';
+
+    function setRightPaddleCenterY(centerY) {
+      rightPaddle.y = clamp(centerY - rightPaddle.height / 2, 0, canvas.height - rightPaddle.height);
+    }
+
+    // Unfolds wall bounces to find the ball's y-position when it reaches targetX,
+    // used only by the unbeatable tier's perfect-intercept tracking.
+    function predictBallInterceptY(targetX) {
+      if (ball.vx <= 0 || targetX <= ball.x) {
+        return ball.y;
+      }
+
+      const timeToReach = (targetX - ball.x) / ball.vx;
+      const rawY = ball.y + ball.vy * timeToReach;
+
+      const minY = ball.radius;
+      const maxY = canvas.height - ball.radius;
+      const range = maxY - minY;
+      if (range <= 0) {
+        return clamp(rawY, minY, maxY);
+      }
+
+      let relative = (rawY - minY) % (2 * range);
+      if (relative < 0) {
+        relative += 2 * range;
+      }
+      if (relative > range) {
+        relative = 2 * range - relative;
+      }
+      return minY + relative;
+    }
+
+    let previousBallVx = 0;
+    let aiErrorOffset = 0;
+
+    function refreshAiErrorOffset(errorMargin) {
+      // Resample once per approach (when the ball starts heading toward the
+      // opponent), not every frame, so the miss reads as a misjudgment
+      // rather than jitter.
+      if (ball.vx > 0 && previousBallVx <= 0) {
+        aiErrorOffset = errorMargin === 0 ? 0 : (Math.random() * 2 - 1) * errorMargin;
+      }
+      previousBallVx = ball.vx;
+    }
+
+    const ballYHistory = [];
+
+    function getDelayedBallY(delayFrames) {
+      ballYHistory.push(ball.y);
+      const maxLength = delayFrames + 1;
+      while (ballYHistory.length > maxLength) {
+        ballYHistory.shift();
+      }
+      return ballYHistory[0];
+    }
 
     function updateRightPaddleAI() {
+      if (difficulty === 'unbeatable') {
+        // Special-case tier: perfect prediction, zero delay, zero error,
+        // snaps straight to the intercept instead of easing toward it.
+        setRightPaddleCenterY(predictBallInterceptY(rightPaddle.x));
+        return;
+      }
+
+      const preset = DIFFICULTY_PRESETS[difficulty];
+      refreshAiErrorOffset(preset.errorMargin);
+      const trackedBallY = getDelayedBallY(preset.reactionDelayFrames);
+      const targetY = trackedBallY + aiErrorOffset;
+
       const paddleCenterY = rightPaddle.y + rightPaddle.height / 2;
-      const diff = ball.y - paddleCenterY;
-      const move = clamp(diff, -AI_PADDLE_SPEED, AI_PADDLE_SPEED);
+      const diff = targetY - paddleCenterY;
+      const move = clamp(diff, -preset.speed, preset.speed);
       rightPaddle.y = clamp(rightPaddle.y + move, 0, canvas.height - rightPaddle.height);
     }
 
