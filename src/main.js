@@ -10,8 +10,43 @@ $(document).ready(function () {
     const COLOR_NEON_GREEN = styles.getPropertyValue('--color-neon-green').trim();
     const COLOR_BALL = styles.getPropertyValue('--color-ball').trim();
 
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    const DIFFICULTY_PRESETS = {
+      easy: { ballSpeed: 3, aiSpeed: 1.2, reactionDelayFrames: 20, errorMargin: 60 },
+      medium: { ballSpeed: 5, aiSpeed: 4.5, reactionDelayFrames: 6, errorMargin: 20 },
+      hard: { ballSpeed: 8, aiSpeed: 14, reactionDelayFrames: 1, errorMargin: 3 },
+    };
+    const UNBEATABLE_BALL_SPEED = 11; // faster than hard, paired with perfect AI tracking
+
+    const DIFFICULTIES = ['easy', 'medium', 'hard', 'unbeatable'];
+    let difficulty = 'medium';
+
+    function getCurrentBallSpeed() {
+      return difficulty === 'unbeatable' ? UNBEATABLE_BALL_SPEED : DIFFICULTY_PRESETS[difficulty].ballSpeed;
+    }
+
+    function setDifficulty(level) {
+      if (!DIFFICULTIES.includes(level)) {
+        console.warn(`Unknown difficulty: ${level}`);
+        return;
+      }
+      difficulty = level;
+      console.log(`Difficulty set to: ${difficulty}`);
+      chrome.storage.local.set({ difficulty: level });
+    }
+
+    // Debug hook until the Day 5 settings UI exists: setDifficulty('unbeatable') from the console
+    window.setDifficulty = setDifficulty;
+
+    chrome.storage.local.get(['difficulty'], function (result) {
+      difficulty = DIFFICULTIES.includes(result.difficulty) ? result.difficulty : 'medium';
+      console.log(`Difficulty loaded: ${difficulty}`);
+    });
+
     const BALL_RADIUS = 7;
-    const BALL_SPEED = 5;
     const BALL_MAX_ANGLE = Math.PI / 4; // 45 degrees off horizontal
 
     const ball = {
@@ -28,15 +63,12 @@ $(document).ready(function () {
 
       const angle = (Math.random() * 2 - 1) * BALL_MAX_ANGLE;
       const direction = Math.random() < 0.5 ? -1 : 1;
-      ball.vx = direction * BALL_SPEED * Math.cos(angle);
-      ball.vy = BALL_SPEED * Math.sin(angle);
+      const speed = getCurrentBallSpeed();
+      ball.vx = direction * speed * Math.cos(angle);
+      ball.vy = speed * Math.sin(angle);
     }
 
     const MAX_BOUNCE_ANGLE = Math.PI / 4; // 45 degrees, edge of paddle vs center
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
 
     function ballHitsPaddle(paddle) {
       const closestX = clamp(ball.x, paddle.x, paddle.x + paddle.width);
@@ -50,7 +82,7 @@ $(document).ready(function () {
       const paddleCenterY = paddle.y + paddle.height / 2;
       const relativeIntersectY = (ball.y - paddleCenterY) / (paddle.height / 2);
       const bounceAngle = relativeIntersectY * MAX_BOUNCE_ANGLE;
-      const speed = Math.hypot(ball.vx, ball.vy) || BALL_SPEED;
+      const speed = getCurrentBallSpeed();
 
       ball.vx = direction * speed * Math.cos(bounceAngle);
       ball.vy = speed * Math.sin(bounceAngle);
@@ -179,33 +211,6 @@ $(document).ready(function () {
       leftPaddle.y = clamp(leftPaddle.y, 0, canvas.height - leftPaddle.height);
     }
 
-    const DIFFICULTY_PRESETS = {
-      easy: { speed: 1.2, reactionDelayFrames: 20, errorMargin: 60 },
-      medium: { speed: 4.5, reactionDelayFrames: 6, errorMargin: 20 },
-      hard: { speed: 14, reactionDelayFrames: 1, errorMargin: 3 },
-    };
-
-    const DIFFICULTIES = ['easy', 'medium', 'hard', 'unbeatable'];
-    let difficulty = 'medium';
-
-    function setDifficulty(level) {
-      if (!DIFFICULTIES.includes(level)) {
-        console.warn(`Unknown difficulty: ${level}`);
-        return;
-      }
-      difficulty = level;
-      console.log(`Difficulty set to: ${difficulty}`);
-      chrome.storage.local.set({ difficulty: level });
-    }
-
-    // Debug hook until the Day 5 settings UI exists: setDifficulty('unbeatable') from the console
-    window.setDifficulty = setDifficulty;
-
-    chrome.storage.local.get(['difficulty'], function (result) {
-      difficulty = DIFFICULTIES.includes(result.difficulty) ? result.difficulty : 'medium';
-      console.log(`Difficulty loaded: ${difficulty}`);
-    });
-
     function setRightPaddleCenterY(centerY) {
       rightPaddle.y = clamp(centerY - rightPaddle.height / 2, 0, canvas.height - rightPaddle.height);
     }
@@ -276,7 +281,7 @@ $(document).ready(function () {
 
       const paddleCenterY = rightPaddle.y + rightPaddle.height / 2;
       const diff = targetY - paddleCenterY;
-      const move = clamp(diff, -preset.speed, preset.speed);
+      const move = clamp(diff, -preset.aiSpeed, preset.aiSpeed);
       rightPaddle.y = clamp(rightPaddle.y + move, 0, canvas.height - rightPaddle.height);
     }
 
