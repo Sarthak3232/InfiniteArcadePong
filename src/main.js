@@ -10,8 +10,43 @@ $(document).ready(function () {
     const COLOR_NEON_GREEN = styles.getPropertyValue('--color-neon-green').trim();
     const COLOR_BALL = styles.getPropertyValue('--color-ball').trim();
 
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    const DIFFICULTY_PRESETS = {
+      easy: { ballSpeed: 3, aiSpeed: 1.2, reactionDelayFrames: 20, errorMargin: 60 },
+      medium: { ballSpeed: 5, aiSpeed: 4.5, reactionDelayFrames: 6, errorMargin: 20 },
+      hard: { ballSpeed: 8, aiSpeed: 14, reactionDelayFrames: 1, errorMargin: 3 },
+    };
+    const UNBEATABLE_BALL_SPEED = 11; // faster than hard, paired with perfect AI tracking
+
+    const DIFFICULTIES = ['easy', 'medium', 'hard', 'unbeatable'];
+    let difficulty = 'medium';
+
+    function getCurrentBallSpeed() {
+      return difficulty === 'unbeatable' ? UNBEATABLE_BALL_SPEED : DIFFICULTY_PRESETS[difficulty].ballSpeed;
+    }
+
+    function setDifficulty(level) {
+      if (!DIFFICULTIES.includes(level)) {
+        console.warn(`Unknown difficulty: ${level}`);
+        return;
+      }
+      difficulty = level;
+      console.log(`Difficulty set to: ${difficulty}`);
+      chrome.storage.local.set({ difficulty: level });
+    }
+
+    // Debug hook until the Day 5 settings UI exists: setDifficulty('unbeatable') from the console
+    window.setDifficulty = setDifficulty;
+
+    chrome.storage.local.get(['difficulty'], function (result) {
+      difficulty = DIFFICULTIES.includes(result.difficulty) ? result.difficulty : 'medium';
+      console.log(`Difficulty loaded: ${difficulty}`);
+    });
+
     const BALL_RADIUS = 7;
-    const BALL_SPEED = 5;
     const BALL_MAX_ANGLE = Math.PI / 4; // 45 degrees off horizontal
 
     const ball = {
@@ -28,15 +63,12 @@ $(document).ready(function () {
 
       const angle = (Math.random() * 2 - 1) * BALL_MAX_ANGLE;
       const direction = Math.random() < 0.5 ? -1 : 1;
-      ball.vx = direction * BALL_SPEED * Math.cos(angle);
-      ball.vy = BALL_SPEED * Math.sin(angle);
+      const speed = getCurrentBallSpeed();
+      ball.vx = direction * speed * Math.cos(angle);
+      ball.vy = speed * Math.sin(angle);
     }
 
     const MAX_BOUNCE_ANGLE = Math.PI / 4; // 45 degrees, edge of paddle vs center
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
 
     function ballHitsPaddle(paddle) {
       const closestX = clamp(ball.x, paddle.x, paddle.x + paddle.width);
@@ -50,7 +82,7 @@ $(document).ready(function () {
       const paddleCenterY = paddle.y + paddle.height / 2;
       const relativeIntersectY = (ball.y - paddleCenterY) / (paddle.height / 2);
       const bounceAngle = relativeIntersectY * MAX_BOUNCE_ANGLE;
-      const speed = Math.hypot(ball.vx, ball.vy) || BALL_SPEED;
+      const speed = getCurrentBallSpeed();
 
       ball.vx = direction * speed * Math.cos(bounceAngle);
       ball.vy = speed * Math.sin(bounceAngle);
@@ -179,6 +211,80 @@ $(document).ready(function () {
       leftPaddle.y = clamp(leftPaddle.y, 0, canvas.height - leftPaddle.height);
     }
 
+    function setRightPaddleCenterY(centerY) {
+      rightPaddle.y = clamp(centerY - rightPaddle.height / 2, 0, canvas.height - rightPaddle.height);
+    }
+
+    // Unfolds wall bounces to find the ball's y-position when it reaches targetX,
+    // used only by the unbeatable tier's perfect-intercept tracking.
+    function predictBallInterceptY(targetX) {
+      if (ball.vx <= 0 || targetX <= ball.x) {
+        return ball.y;
+      }
+
+      const timeToReach = (targetX - ball.x) / ball.vx;
+      const rawY = ball.y + ball.vy * timeToReach;
+
+      const minY = ball.radius;
+      const maxY = canvas.height - ball.radius;
+      const range = maxY - minY;
+      if (range <= 0) {
+        return clamp(rawY, minY, maxY);
+      }
+
+      let relative = (rawY - minY) % (2 * range);
+      if (relative < 0) {
+        relative += 2 * range;
+      }
+      if (relative > range) {
+        relative = 2 * range - relative;
+      }
+      return minY + relative;
+    }
+
+    let previousBallVx = 0;
+    let aiErrorOffset = 0;
+
+    function refreshAiErrorOffset(errorMargin) {
+      // Resample once per approach (when the ball starts heading toward the
+      // opponent), not every frame, so the miss reads as a misjudgment
+      // rather than jitter.
+      if (ball.vx > 0 && previousBallVx <= 0) {
+        aiErrorOffset = errorMargin === 0 ? 0 : (Math.random() * 2 - 1) * errorMargin;
+      }
+      previousBallVx = ball.vx;
+    }
+
+    const ballYHistory = [];
+
+    function getDelayedBallY(delayFrames) {
+      ballYHistory.push(ball.y);
+      const maxLength = delayFrames + 1;
+      while (ballYHistory.length > maxLength) {
+        ballYHistory.shift();
+      }
+      return ballYHistory[0];
+    }
+
+    function updateRightPaddleAI() {
+      if (difficulty === 'unbeatable') {
+        // Special-case tier: perfect prediction, zero delay, zero error,
+        // snaps straight to the intercept instead of easing toward it.
+        setRightPaddleCenterY(predictBallInterceptY(rightPaddle.x));
+        return;
+      }
+
+      const preset = DIFFICULTY_PRESETS[difficulty];
+      refreshAiErrorOffset(preset.errorMargin);
+      const trackedBallY = getDelayedBallY(preset.reactionDelayFrames);
+      const targetY = trackedBallY + aiErrorOffset;
+
+      const paddleCenterY = rightPaddle.y + rightPaddle.height / 2;
+      const diff = targetY - paddleCenterY;
+      const move = clamp(diff, -preset.aiSpeed, preset.aiSpeed);
+      rightPaddle.y = clamp(rightPaddle.y + move, 0, canvas.height - rightPaddle.height);
+    }
+
     function drawPaddle(paddle) {
       ctx.save();
       ctx.strokeStyle = COLOR_NEON_GREEN;
@@ -224,6 +330,7 @@ $(document).ready(function () {
 
     function update() {
       updateLeftPaddleFromKeyboard();
+      updateRightPaddleAI();
       updateBall();
     }
 
