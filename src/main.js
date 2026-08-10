@@ -195,10 +195,16 @@ $(document).ready(function () {
       }
       difficulty = level;
       console.log(`Difficulty set to: ${difficulty}`);
+      chrome.storage.local.set({ difficulty: level });
     }
 
     // Debug hook until the Day 5 settings UI exists: setDifficulty('unbeatable') from the console
     window.setDifficulty = setDifficulty;
+
+    chrome.storage.local.get(['difficulty'], function (result) {
+      difficulty = DIFFICULTIES.includes(result.difficulty) ? result.difficulty : 'medium';
+      console.log(`Difficulty loaded: ${difficulty}`);
+    });
 
     function setRightPaddleCenterY(centerY) {
       rightPaddle.y = clamp(centerY - rightPaddle.height / 2, 0, canvas.height - rightPaddle.height);
