@@ -179,6 +179,15 @@ $(document).ready(function () {
       leftPaddle.y = clamp(leftPaddle.y, 0, canvas.height - leftPaddle.height);
     }
 
+    const AI_PADDLE_SPEED = 4;
+
+    function updateRightPaddleAI() {
+      const paddleCenterY = rightPaddle.y + rightPaddle.height / 2;
+      const diff = ball.y - paddleCenterY;
+      const move = clamp(diff, -AI_PADDLE_SPEED, AI_PADDLE_SPEED);
+      rightPaddle.y = clamp(rightPaddle.y + move, 0, canvas.height - rightPaddle.height);
+    }
+
     function drawPaddle(paddle) {
       ctx.save();
       ctx.strokeStyle = COLOR_NEON_GREEN;
@@ -224,6 +233,7 @@ $(document).ready(function () {
 
     function update() {
       updateLeftPaddleFromKeyboard();
+      updateRightPaddleAI();
       updateBall();
     }
 
