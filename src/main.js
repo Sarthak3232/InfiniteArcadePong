@@ -185,7 +185,20 @@ $(document).ready(function () {
       hard: { speed: 7, reactionDelayFrames: 1, errorMargin: 5 },
     };
 
+    const DIFFICULTIES = ['easy', 'medium', 'hard', 'unbeatable'];
     let difficulty = 'medium';
+
+    function setDifficulty(level) {
+      if (!DIFFICULTIES.includes(level)) {
+        console.warn(`Unknown difficulty: ${level}`);
+        return;
+      }
+      difficulty = level;
+      console.log(`Difficulty set to: ${difficulty}`);
+    }
+
+    // Debug hook until the Day 5 settings UI exists: setDifficulty('unbeatable') from the console
+    window.setDifficulty = setDifficulty;
 
     function setRightPaddleCenterY(centerY) {
       rightPaddle.y = clamp(centerY - rightPaddle.height / 2, 0, canvas.height - rightPaddle.height);
