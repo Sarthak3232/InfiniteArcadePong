@@ -180,7 +180,7 @@ $(document).ready(function () {
     }
 
     const DIFFICULTY_PRESETS = {
-      easy: { speed: 2.5, reactionDelayFrames: 14, errorMargin: 45 },
+      easy: { speed: 1.2, reactionDelayFrames: 20, errorMargin: 60 },
       medium: { speed: 4.5, reactionDelayFrames: 6, errorMargin: 20 },
       hard: { speed: 14, reactionDelayFrames: 1, errorMargin: 3 },
     };
