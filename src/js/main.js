@@ -6,6 +6,7 @@ import { tickSurvivalScore } from './score.js';
 import { isGamePlaying } from './screens.js';
 import { refreshGameOverScores } from './gameOverScreen.js';
 import { refreshSettingsActiveStates } from './settingsScreen.js';
+import { updateStatusBar } from './statusBar.js';
 
 console.log('Infinite Arcade Pong initialized');
 
@@ -30,6 +31,7 @@ function gameLoop(timestamp) {
   // Cheap to keep in sync every frame regardless of which screen is active.
   refreshGameOverScores();
   refreshSettingsActiveStates();
+  updateStatusBar();
 
   requestAnimationFrame(gameLoop);
 }

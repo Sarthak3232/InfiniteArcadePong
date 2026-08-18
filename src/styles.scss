@@ -42,7 +42,8 @@ body {
   justify-content: space-between;
   width: 480px;
   padding: 6px 10px;
-  color: $color-status-bar;
+  background: $color-status-bar;
+  color: $color-ball;
 }
 
 .status-item {
