@@ -35,7 +35,7 @@ function getDelayedBallY(delayFrames) {
 export function updateRightPaddleAI() {
   const difficulty = getDifficulty();
 
-  if (difficulty === 'unbeatable') {
+  if (difficulty === 'infinite') {
     // Special-case tier: perfect prediction, zero delay, zero error,
     // snaps straight to the intercept instead of easing toward it.
     setRightPaddleCenterY(predictBallInterceptY(rightPaddle.x));

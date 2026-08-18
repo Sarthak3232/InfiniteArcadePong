@@ -16,6 +16,18 @@ export const ball = {
   radius: BALL_RADIUS,
 };
 
+// Lets other modules (e.g. screens.js) react to the player missing without
+// ball.js needing to know anything about screens/game-over state itself.
+const playerMissListeners = [];
+
+export function onPlayerMiss(listener) {
+  playerMissListeners.push(listener);
+}
+
+function notifyPlayerMiss() {
+  playerMissListeners.forEach((listener) => listener());
+}
+
 export function resetBall() {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 2;
@@ -46,7 +58,7 @@ function reflectOffPaddle(paddle, direction) {
 }
 
 // Unfolds wall bounces to find the ball's y-position when it reaches targetX,
-// used by the unbeatable AI tier's perfect-intercept tracking.
+// used by the infinite AI tier's perfect-intercept tracking.
 export function predictBallInterceptY(targetX) {
   if (ball.vx <= 0 || targetX <= ball.x) {
     return ball.y;
@@ -90,10 +102,11 @@ export function updateBall() {
   }
 
   if (ball.x + ball.radius < 0) {
-    awardPoint('opponent');
-    resetBall();
+    // Player missed - this ends the game, so leave the ball where it is
+    // rather than resetting; startNewGame() (Play button) resets it.
+    notifyPlayerMiss();
   } else if (ball.x - ball.radius > canvas.width) {
-    awardPoint('player');
+    awardPoint();
     resetBall();
   }
 }

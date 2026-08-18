@@ -42,7 +42,8 @@ body {
   justify-content: space-between;
   width: 480px;
   padding: 6px 10px;
-  color: $color-status-bar;
+  background: $color-status-bar;
+  color: $color-ball;
 }
 
 .status-item {
@@ -59,4 +60,154 @@ body {
   box-shadow:
     0 0 4px $color-neon-green,
     0 0 8px $color-neon-green;
+}
+
+.hidden {
+  display: none;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 480px;
+}
+
+.screen-gameover {
+  position: relative;
+  padding: 16px 0;
+  gap: 10px;
+}
+
+.gameover-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn.muted {
+  color: rgba($color-neon-green, 0.35);
+}
+
+.game-title {
+  font-size: 18px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-bottom: 4px;
+}
+
+.gameover-heading {
+  font-size: 28px;
+  color: $color-ball;
+  margin-bottom: 6px;
+}
+
+.gameover-scores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.gameover-score-row {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.gameover-score-label {
+  color: $color-neon-green;
+}
+
+.gameover-score-value {
+  color: $color-ball;
+}
+
+.btn-pill {
+  background: transparent;
+  border: 2px solid $color-neon-green;
+  border-radius: 999px;
+  padding: 8px 32px;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: $color-neon-green;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.screen-settings {
+  position: relative;
+  padding: 16px 0;
+  gap: 18px;
+}
+
+.back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.settings-heading {
+  font-size: 20px;
+  margin-top: 6px;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.settings-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: $color-ball;
+}
+
+.settings-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  width: 300px;
+}
+
+.settings-buttons-difficulty .option-btn {
+  flex: 1 1 calc(33.333% - 8px);
+}
+
+.option-btn {
+  background: transparent;
+  border: 2px solid rgba($color-neon-green, 0.35);
+  color: rgba($color-neon-green, 0.6);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+
+  &.active {
+    @extend .neon-glow;
+  }
+}
+
+// Infinite is a distinct special tier, not just "hard but higher" -
+// give it its own row and a dashed border to set it apart visually.
+.option-btn-infinite {
+  flex-basis: 100%;
+  border-style: dashed;
 }

@@ -4,6 +4,10 @@ import { leftPaddle } from './paddles.js';
 
 let controlScheme = 'mouse';
 
+export function getControlScheme() {
+  return controlScheme;
+}
+
 export function setControlScheme(scheme) {
   if (scheme !== 'mouse' && scheme !== 'keyboard') {
     console.warn(`Unknown control scheme: ${scheme}`);
