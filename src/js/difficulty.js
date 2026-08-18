@@ -3,8 +3,8 @@ export const DIFFICULTY_PRESETS = {
   medium: { ballSpeed: 5, aiSpeed: 4.5, reactionDelayFrames: 6, errorMargin: 20 },
   hard: { ballSpeed: 8, aiSpeed: 14, reactionDelayFrames: 1, errorMargin: 3 },
 };
-export const UNBEATABLE_BALL_SPEED = 11; // faster than hard, paired with perfect AI tracking
-export const DIFFICULTIES = ['easy', 'medium', 'hard', 'unbeatable'];
+export const INFINITE_BALL_SPEED = 11; // faster than hard, paired with perfect AI tracking
+export const DIFFICULTIES = ['easy', 'medium', 'hard', 'infinite'];
 
 let difficulty = 'medium';
 
@@ -13,7 +13,7 @@ export function getDifficulty() {
 }
 
 export function getCurrentBallSpeed() {
-  return difficulty === 'unbeatable' ? UNBEATABLE_BALL_SPEED : DIFFICULTY_PRESETS[difficulty].ballSpeed;
+  return difficulty === 'infinite' ? INFINITE_BALL_SPEED : DIFFICULTY_PRESETS[difficulty].ballSpeed;
 }
 
 export function setDifficulty(level) {
@@ -26,10 +26,15 @@ export function setDifficulty(level) {
   chrome.storage.local.set({ difficulty: level });
 }
 
-// Debug hook until the Day 5 settings UI exists: setDifficulty('unbeatable') from the console
+// Debug hook until the Day 5 settings UI exists: setDifficulty('infinite') from the console
 window.setDifficulty = setDifficulty;
 
 chrome.storage.local.get(['difficulty'], function (result) {
-  difficulty = DIFFICULTIES.includes(result.difficulty) ? result.difficulty : 'medium';
+  const stored = result.difficulty === 'unbeatable' ? 'infinite' : result.difficulty;
+  difficulty = DIFFICULTIES.includes(stored) ? stored : 'medium';
   console.log(`Difficulty loaded: ${difficulty}`);
+
+  if (stored !== result.difficulty) {
+    chrome.storage.local.set({ difficulty: stored });
+  }
 });

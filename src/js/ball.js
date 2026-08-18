@@ -46,7 +46,7 @@ function reflectOffPaddle(paddle, direction) {
 }
 
 // Unfolds wall bounces to find the ball's y-position when it reaches targetX,
-// used by the unbeatable AI tier's perfect-intercept tracking.
+// used by the infinite AI tier's perfect-intercept tracking.
 export function predictBallInterceptY(targetX) {
   if (ball.vx <= 0 || targetX <= ball.x) {
     return ball.y;
