@@ -41,7 +41,7 @@ body {
   font-size: 12px;
 }
 
-.neon-glow {
+.neon-glow, .option-btn.active {
   color: #39ff14;
   text-shadow: 0 0 4px #39ff14, 0 0 8px #39ff14;
   border-color: #39ff14;
@@ -107,4 +107,73 @@ body {
   font-family: inherit;
   font-size: 16px;
   cursor: pointer;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #39ff14;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.screen-settings {
+  position: relative;
+  padding: 16px 0;
+  gap: 18px;
+}
+
+.back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.settings-heading {
+  font-size: 20px;
+  margin-top: 6px;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.settings-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.settings-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  width: 300px;
+}
+
+.settings-buttons-difficulty .option-btn {
+  flex: 1 1 calc(33.333% - 8px);
+}
+
+.option-btn {
+  background: transparent;
+  border: 2px solid rgba(57, 255, 20, 0.35);
+  color: rgba(57, 255, 20, 0.6);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.option-btn-infinite {
+  flex-basis: 100%;
+  border-style: dashed;
 }

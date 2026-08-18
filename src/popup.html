@@ -27,6 +27,29 @@
       <button id="play-btn" class="btn-pill neon-glow">Play</button>
     </div>
 
+    <div id="screen-settings" class="screen screen-settings hidden">
+      <button id="back-btn" class="icon-btn back-btn" aria-label="Back">&larr;</button>
+      <h2 class="settings-heading">Settings</h2>
+
+      <div class="settings-section">
+        <h3 class="settings-label">Control</h3>
+        <div class="settings-buttons">
+          <button class="option-btn" data-control-scheme="keyboard">Up &amp; Down Arrow Key</button>
+          <button class="option-btn" data-control-scheme="mouse">Mouse</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="settings-label">Difficulty</h3>
+        <div class="settings-buttons settings-buttons-difficulty">
+          <button class="option-btn" data-difficulty="easy">Easy</button>
+          <button class="option-btn" data-difficulty="medium">Medium</button>
+          <button class="option-btn" data-difficulty="hard">Hard</button>
+          <button class="option-btn option-btn-infinite" data-difficulty="infinite">Infinite</button>
+        </div>
+      </div>
+    </div>
+
     <div id="status-bar" class="status-bar">
       <div class="status-item" id="score">Score: 0</div>
       <div class="status-item" id="highscore">High Score: 0</div>
