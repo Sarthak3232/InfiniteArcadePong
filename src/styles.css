@@ -47,3 +47,64 @@ body {
   border-color: #39ff14;
   box-shadow: 0 0 4px #39ff14, 0 0 8px #39ff14;
 }
+
+.hidden {
+  display: none;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 480px;
+}
+
+.screen-gameover {
+  padding: 16px 0;
+  gap: 10px;
+}
+
+.game-title {
+  font-size: 18px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-bottom: 4px;
+}
+
+.gameover-heading {
+  font-size: 28px;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.gameover-scores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.gameover-score-row {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.gameover-score-label {
+  color: #39ff14;
+}
+
+.gameover-score-value {
+  color: #ffffff;
+}
+
+.btn-pill {
+  background: transparent;
+  border: 2px solid #39ff14;
+  border-radius: 999px;
+  padding: 8px 32px;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}

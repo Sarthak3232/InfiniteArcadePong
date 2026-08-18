@@ -7,7 +7,25 @@
 </head>
 <body>
   <div class="game-container">
-    <canvas id="game-board" width="480" height="360"></canvas>
+    <div id="screen-game" class="screen">
+      <canvas id="game-board" width="480" height="360"></canvas>
+    </div>
+
+    <div id="screen-gameover" class="screen screen-gameover hidden">
+      <h1 class="game-title neon-glow">Infinite Arcade Pong</h1>
+      <h2 class="gameover-heading">Game Over</h2>
+      <div class="gameover-scores">
+        <div class="gameover-score-row">
+          <span class="gameover-score-label">Score</span>
+          <span class="gameover-score-value" id="gameover-score">0</span>
+        </div>
+        <div class="gameover-score-row">
+          <span class="gameover-score-label">Highscore</span>
+          <span class="gameover-score-value" id="gameover-highscore">0</span>
+        </div>
+      </div>
+      <button id="play-btn" class="btn-pill neon-glow">Play</button>
+    </div>
 
     <div id="status-bar" class="status-bar">
       <div class="status-item" id="score">Score: 0</div>

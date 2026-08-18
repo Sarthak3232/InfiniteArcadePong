@@ -3,6 +3,8 @@ import { updateLeftPaddleFromKeyboard } from './controls.js';
 import { updateRightPaddleAI } from './ai.js';
 import { render } from './render.js';
 import { tickSurvivalScore } from './score.js';
+import { isGamePlaying } from './screens.js';
+import { refreshGameOverScores } from './gameOverScreen.js';
 
 console.log('Infinite Arcade Pong initialized');
 
@@ -19,8 +21,14 @@ function gameLoop(timestamp) {
   const dtSeconds = lastTimestamp === null ? 0 : (timestamp - lastTimestamp) / 1000;
   lastTimestamp = timestamp;
 
-  update(dtSeconds);
-  render();
+  if (isGamePlaying()) {
+    update(dtSeconds);
+    render();
+  }
+
+  // Cheap to keep in sync every frame regardless of which screen is active.
+  refreshGameOverScores();
+
   requestAnimationFrame(gameLoop);
 }
 
